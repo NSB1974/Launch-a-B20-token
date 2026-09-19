@@ -1,0 +1,10 @@
+{
+  ".sol": {
+    "__sources__": {
+      ".sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n// Minimal interface for the Base B20 Factory precompile\ninterface IB20Factory {\n    enum B20Variant { ASSET, STABLECOIN }\n\n    function createB20(\n        B20Variant variant,\n        bytes32 salt,\n        bytes calldata params,\n        bytes[] calldata initCalls\n    ) external returns (address token);\n}\n\ncontract BaseB20Deployer {\n    // The exact precompile address for the B20 Factory on Base\n    address public constant B20_FACTORY_ADDRESS = 0xB20f000000000000000000000000000000000000;\n\n    event TokenCreated(address indexed tokenAddress);\n\n    /**\n     * @notice Deploys a new native B20 Asset token\n     * @param tokenName The name of your token\n     * @param tokenSymbol The symbol of your token\n     * @param adminAndMinter The address that will hold the initial admin & minter role\n     * @param salt Unique bytes32 entropy to deterministically derive the token address\n     */\n    function launchAssetToken(\n        string memory tokenName,\n        string memory tokenSymbol,\n        address adminAndMinter,\n        bytes32 salt\n    ) external returns (address token) {\n        \n        // 1. Encode creation parameters: Name, Symbol, Admin Address, Decimals (e.g., 18)\n        bytes memory params = abi.encode(tokenName, tokenSymbol, adminAndMinter, uint8(18));\n\n        // 2. Setup initialization roles/limits (Optional setup post-creation)\n        // For simplicity, we are leaving initCalls empty. The admin can manage configuration later.\n        bytes[] memory initCalls = new bytes[](0);\n\n        // 3. Call the native Base precompile factory\n        token = IB20Factory(B20_FACTORY_ADDRESS).createB20(\n            IB20Factory.B20Variant.ASSET,\n            salt,\n            params,\n            initCalls\n        );\n\n        emit TokenCreated(token);\n    }\n}\n\n",
+        "file": ".sol"
+      }
+    }
+  }
+}
