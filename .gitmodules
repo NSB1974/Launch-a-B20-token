@@ -1,0 +1,3 @@
+[submodule "lib/base-std"]
+	path = lib/base-std
+	url = https://github.com/base/base-std
